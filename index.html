@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Sign-In</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin-top: 50px;
+    }
+    input {
+      padding: 10px;
+      margin: 10px;
+      font-size: 16px;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+  <h1>Student Sign-In</h1>
+  <form id="signinForm">
+    <label for="student_id">Enter your Student ID:</label>
+    <input type="text" id="student_id" name="student_id" required>
+    <br>
+    <button type="submit">Sign In</button>
+  </form>
+
+  <p id="message"></p>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
+
+  <script>
+    // Your Firebase configuration (replace with your Firebase config from the Firebase console)
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT_ID.appspot.com",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+
+    // Initialize Firebase
+    const app = firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore(app);
+
+    document.getElementById('signinForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+      
+      const studentId = document.getElementById('student_id').value;
+      const signInTime = new Date().toISOString();
+
+      // Save the student ID and sign-in time to Firestore
+      db.collection('signins').add({
+        student_id: studentId,
+        sign_in_time: signInTime
+      })
+      .then(() => {
+        document.getElementById('message').textContent = `Student ID ${studentId} signed in at ${signInTime}`;
+        document.getElementById('student_id').value = ''; // Clear input field
+      })
+      .catch(error => {
+        document.getElementById('message').textContent = 'Error signing in: ' + error.message;
+      });
+    });
+  </script>
+</body>
+</html>
